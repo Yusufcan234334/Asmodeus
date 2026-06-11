@@ -3,28 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, 
-  Wallet, 
-  CheckSquare, 
-  Bot, 
-  MessageSquare,
-  Settings,
-  Users
+  LayoutDashboard, Wallet, CheckSquare, Bot, MessageSquare, Settings, Users
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
-export default function Sidebar() {
+export default function Sidebar({ companyId }: { companyId: string }) {
   const pathname = usePathname();
   const { user } = useAuth();
 
   const navItems = [
-    { name: "Panel", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Finans & Giderler", href: "/dashboard/finance", icon: Wallet },
-    { name: "Görevler", href: "/dashboard/tasks", icon: CheckSquare },
-    { name: "AI Ajanları", href: "/dashboard/agents", icon: Bot },
-    { name: "Mesajlar", href: "/dashboard/messages", icon: MessageSquare },
-    { name: "Ekip", href: "/dashboard/team", icon: Users },
-    { name: "Ayarlar", href: "/dashboard/settings", icon: Settings },
+    { name: "Panel", href: `/${companyId}`, icon: LayoutDashboard },
+    { name: "Finans & Giderler", href: `/${companyId}/finance`, icon: Wallet },
+    { name: "Görevler", href: `/${companyId}/tasks`, icon: CheckSquare },
+    { name: "AI Ajanları", href: `/${companyId}/agents`, icon: Bot },
+    { name: "Mesajlar", href: `/${companyId}/messages`, icon: MessageSquare },
+    { name: "Ekip & Ayarlar", href: `/${companyId}/settings`, icon: Settings },
   ];
 
   return (
@@ -33,12 +26,16 @@ export default function Sidebar() {
         <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>
           T
         </div>
-        <h2 style={{ fontSize: "1.2rem", fontWeight: "600", color: "var(--text-primary)" }}>Tulumba</h2>
+        <Link href="/" style={{ fontSize: "1.2rem", fontWeight: "600", color: "var(--text-primary)" }}>Tulumba</Link>
       </div>
 
       <nav style={{ padding: "1rem 0", flex: 1, display: "flex", flexDirection: "column", gap: "0.25rem", overflowY: "auto" }}>
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          // Exact match for dashboard, prefix match for subpages
+          const isActive = item.href === `/${companyId}` 
+            ? pathname === item.href 
+            : pathname.startsWith(item.href);
+            
           const Icon = item.icon;
           
           return (
@@ -46,10 +43,7 @@ export default function Sidebar() {
               key={item.name} 
               href={item.href}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                padding: "0.75rem 1.5rem",
+                display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.5rem",
                 color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
                 background: isActive ? "rgba(99, 102, 241, 0.15)" : "transparent",
                 borderRight: isActive ? "3px solid var(--accent-primary)" : "3px solid transparent",
@@ -83,7 +77,7 @@ export default function Sidebar() {
           <div style={{ fontSize: "0.9rem", fontWeight: "500", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
             {user?.email?.split('@')[0]}
           </div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Çevrimiçi</div>
+          <Link href="/" style={{ fontSize: "0.75rem", color: "var(--accent-primary)" }}>Şirket Değiştir</Link>
         </div>
       </div>
     </div>
